@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('employee'); // додати колонку role
+            $table->string('role')
+                  ->default('user')
+                  ->after('password'); // опційно: щоб поле було після 'password'
         });
     }
 
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role'); // видалити колонку role
+            $table->dropColumn('role');
         });
     }
 };

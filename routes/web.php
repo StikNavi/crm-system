@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RatingController;
+use App\Http\Middleware\IsAdmin;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,13 +14,13 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/user/profile', [UserController::class, 'edit'])->name('user.profile.edit');
-    Route::patch('/user/profile', [UserController::class, 'update'])->name('user.profile.update');
-    Route::delete('/user/profile', [UserController::class, 'destroy'])->name('user.profile.destroy');
-
-    // Додано маршрути для рейтингу
-    Route::get('/ratings/create', [RatingController::class, 'create'])->name('ratings.create');
-    Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/dashboard', [RatingController::class, 'create'])->name('admin.dashboard');
+})->middleware(IsAdmin::class);;
 
 require __DIR__.'/auth.php';
