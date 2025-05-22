@@ -38,4 +38,10 @@ class User extends Authenticatable
     {
         return $this->role === 'admin'; // Припускаємо, що роль зберігається у полі `role`
     }
+
+    public function isClient(): bool
+{
+    return $this->role === 'client';
+}
+
 }
