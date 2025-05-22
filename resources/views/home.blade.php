@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Головна - Працівники</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @vite(['resources/css/app.css', 'resources/js/app.js']) {{-- Для Tailwind або Laravel Mix --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
 
@@ -42,7 +42,7 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             @foreach($employees as $employee)
                 <div class="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-xl transition">
                     @if($employee->photo)
@@ -55,14 +55,23 @@
 
                     <h2 class="text-xl font-semibold">{{ $employee->full_name }}</h2>
                     <p class="text-gray-600">{{ $employee->position }}</p>
-                    <p class="text-gray-500">Стаж: {{ $employee->experience }} років</p>
+                    <p class="text-gray-500">Стаж: {{ $employee->experience }} р</p>
 
                     @auth
+                        {{-- Кнопка "Створити завдання" для всіх авторизованих --}}
+                        <a href="{{ route('tasks.create', $employee->id) }}"
+                        class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                        Додати завдання
+                        </a>
+
+                        {{-- Кнопка видалення лише для адміністраторів --}}
                         @if(Auth::user()->is_admin)
                             <form action="{{ route('employees.destroy', $employee) }}" method="POST" class="mt-4">
                                 @csrf
                                 @method('DELETE')
-                                <button onclick="return confirm('Ви впевнені?')" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Видалити</button>
+                                <button onclick="return confirm('Ви впевнені?')" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                                    Видалити
+                                </button>
                             </form>
                         @endif
                     @endauth
@@ -77,6 +86,40 @@
             &copy; {{ date('Y') }} Будівельна Фірма. Всі права захищено.
         </div>
     </footer>
+
+    {{-- МОДАЛЬНЕ ВІКНО СТВОРЕННЯ ЗАВДАННЯ --}}
+    <div id="taskModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-md relative">
+            <button onclick="closeTaskModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl">&times;</button>
+            <h2 class="text-xl font-semibold mb-4">Створити завдання для <span id="employeeName"></span></h2>
+            <form method="POST" action="{{ route('tasks.store') }}">
+                @csrf
+                <input type="hidden" name="employee_id" id="employeeId">
+
+                <div class="mb-4">
+                    <label for="description" class="block text-gray-700">Опис завдання</label>
+                    <textarea name="description" id="description" rows="3" class="w-full border rounded p-2" required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="deadline" class="block text-gray-700">Термін виконання</label>
+                    <input type="date" name="deadline" id="deadline" class="w-full border rounded p-2" required>
+                </div>
+
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Надіслати</button>
+            </form>
+        </div>
+    </div>
+
+    {{-- JavaScript для керування модальним вікном --}}
+    <script>
+
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').classList.remove('flex');
+            document.getElementById('taskModal').classList.add('hidden');
+        }
+    </script>
 
 </body>
 </html>

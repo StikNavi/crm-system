@@ -13,11 +13,27 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('users');  // Зв'язок з клієнтом
-            $table->foreignId('employee_id')->nullable()->constrained('users');  // Зв'язок з працівником, може бути порожнім
-            $table->string('title');  // Заголовок завдання
-            $table->text('description')->nullable();  // Опис завдання
-            $table->timestamps();  // Час створення та оновлення
+
+            // Користувач, який створив завдання (клієнт)
+            $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
+
+            // Працівник, якому призначено завдання
+            $table->foreignId('employee_id')->nullable()->constrained('users')->onDelete('set null');
+
+            // Назва і опис завдання
+            $table->string('title');
+            $table->text('description')->nullable();
+
+            // Термін виконання (який задає клієнт)
+            $table->date('deadline')->nullable();
+
+            // Вартість, яку встановлює адміністратор
+            $table->decimal('price', 10, 2)->nullable();
+
+            // Статус завдання: pending, approved, rejected
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+
+            $table->timestamps();
         });
     }
 

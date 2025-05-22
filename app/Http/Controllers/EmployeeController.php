@@ -23,10 +23,10 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'experience' => 'required|integer|min:0',
-            'photo' => 'nullable|image|max:2048',
+    'photo' => 'nullable|image|max:2048',
+    'full_name' => 'required|string|max:255',
+    'position' => 'required|string|max:255',
+    'experience' => 'required|integer|min:0',
         ]);
 
         if ($request->hasFile('photo')) {
